@@ -1,6 +1,7 @@
+import itertools
 import os
 import sys
-from typing import List, Tuple, Optional
+from typing import List, Set, Tuple, Optional
 
 import yaml
 import click
@@ -226,7 +227,8 @@ def main(
         except_tags=_add_default_except_tags(except_tags),
         only_tags=only_tags,
         get_flaky_tests=run_flaky_tests,
-        get_high_impact_tests=run_high_impact_tests,
+        get_high_impact_tests=run_high_impact_tests
+        or os.environ.get("RAYCI_MICROCHECK_RUN") == "1",
     )
     success = container.run_tests(team, test_targets, test_arg)
     sys.exit(0 if success else 42)
@@ -374,31 +376,24 @@ def _get_test_targets(
     if get_high_impact_tests:
         # run high impact test cases, so we include only high impact tests in the list
         # of targets provided by users
-        high_impact_tests = set(_get_high_impact_test_targets(team, operating_system))
+        high_impact_tests = _get_high_impact_test_targets(team, operating_system)
         final_targets = high_impact_tests.intersection(final_targets)
 
     return list(final_targets)
 
 
-def _get_high_impact_test_targets(team: str, operating_system: str) -> List[str]:
+def _get_high_impact_test_targets(team: str, operating_system: str) -> Set[str]:
     """
     Get all test targets that are high impact
     """
     os_prefix = f"{operating_system}:"
-    return [
+    step_id_to_tests = Test.gen_high_impact_tests(prefix=os_prefix)
+    return {
         test.get_name().lstrip(os_prefix)
-        for test in Test.gen_from_s3(prefix=os_prefix)
-        if test.get_oncall() == team and test.is_high_impact()
-    ]
+        for test in itertools.chain.from_iterable(step_id_to_tests.values())
+        if test.get_oncall() == team
+    }
 
-def _get_high_impact_test_targets(team: str, operating_system: str) -> List[str]:
-    """
-    Get all test targets that are high impact
-    """
-    os_prefix = f"{operating_system}:"
-    return [
-        test.get_name().lstrip(os_prefix) for test in Test.gen_from_s3(prefix=os_prefix) if test.get_oncall() == team and test.is_high_impact()
-    ]
 
 def _get_flaky_test_targets(
     team: str, operating_system: str, yaml_dir: Optional[str] = None
