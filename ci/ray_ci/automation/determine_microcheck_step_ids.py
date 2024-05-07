@@ -1,14 +1,9 @@
 import click
-from typing import List, Set, Dict
+from typing import List
 
-from ci.ray_ci.utils import logger, ci_init
-from ray_release.configs.global_config import get_global_config
+from ci.ray_ci.utils import ci_init
+from ci.ray_ci.automation.determine_microcheck_tests import LINUX_TEST_PREFIX
 from ray_release.test import Test
-from ray_release.result import ResultStatus
-
-# The s3 prefix for the tests that run on Linux. It comes from the bazel prefix rule
-# linux:// with the character "/" replaced by "_" for s3 compatibility
-LINUX_TEST_PREFIX = "linux:__"
 
 
 @click.command()
@@ -17,8 +12,16 @@ def main() -> None:
     This script determines the rayci step ids to run microcheck tests.
     """
     ci_init()
-    high_impact_tests = [
-        test for test in Test.gen_from_s3(LINUX_TEST_PREFIX) test.is_high_impact()
+    step_ids = _get_high_impact_step_ids(Test.gen_from_s3(prefix=LINUX_TEST_PREFIX))
+    print(",".join([step for step in step_ids if step]))
+
+
+def _get_high_impact_step_ids(tests: List[Test]) -> List[str]:
+    high_impact_tests = [test for test in tests if test.is_high_impact()]
+    return [
+        test.get_test_results(limit=1)[0].rayci_step_id for test in high_impact_tests
     ]
-    step_ids = [test.get_test_result(limit=1)[0].rayci_step_id for test in high_impact_tests]
-    print(" ".join(step_ids))
+
+
+if __name__ == "__main__":
+    main()
