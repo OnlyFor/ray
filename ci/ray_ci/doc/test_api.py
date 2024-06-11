@@ -1,5 +1,6 @@
 import sys
 import pytest
+from unittest import mock
 
 from ci.ray_ci.doc.api import (
     API,
@@ -8,9 +9,12 @@ from ci.ray_ci.doc.api import (
     _SPHINX_AUTOCLASS_HEADER,
     _SPHINX_AUTOSUMMARY_HEADER,
 )
+from ci.ray_ci.doc.mock.mock_module import mock_function
 
 
-def test_from_autosummary():
+@mock.patch("ci.ray_ci.doc.api.API._fullname")
+def test_from_autosummary(mock_api_fullname):
+    mock_api_fullname.side_effect = lambda x: x
     test_data = [
         {
             "input": {
@@ -55,7 +59,9 @@ def test_from_autosummary():
         ) == str(test["output"])
 
 
-def test_from_autoclasss():
+@mock.patch("ci.ray_ci.doc.api.API._fullname")
+def test_from_autoclasss(mock_api_fullname):
+    mock_api_fullname.side_effect = lambda x: x
     test_data = [
         # valid input, no module
         {
@@ -98,6 +104,13 @@ def test_from_autoclasss():
                 test["input"]["module"],
             )
         ) == str(test["output"])
+
+
+def test_fullname():
+    assert (
+        API._fullname("ci.ray_ci.doc.mock.mock_function")
+        == f"{mock_function.__module__}.{mock_function.__qualname__}"
+    )
 
 
 if __name__ == "__main__":
