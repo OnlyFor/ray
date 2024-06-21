@@ -141,6 +141,11 @@ Execution
 
     Dataset.materialize
 
+Schema
+------
+
+.. autoclass:: Schema 
+
 .. _block-api:
 
 Internals
