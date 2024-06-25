@@ -7,6 +7,7 @@
 SPHINXOPTS    = -a -E -W -j auto
 LINKCHECKOPTS = -a -E -j auto
 SPHINXBUILD   = sphinx-build
+SPHINXAUTOGEN = sphinx-autogen
 PAPER         =
 BUILDDIR      = _build
 
@@ -70,6 +71,7 @@ clean:
 	rm -f ./source/train/examples.rst
 
 html:
+	$(SPHINXAUTOGEN) source/data/api/_autogen.rst
 	$(SPHINXBUILD) -W --keep-going -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
