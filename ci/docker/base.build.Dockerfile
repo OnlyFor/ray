@@ -14,4 +14,6 @@ set -euo pipefail
 
 BUILD=1 ./ci/ci.sh init
 
+pip install setuptools==70.3.0
+
 EOF

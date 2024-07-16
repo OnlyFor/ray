@@ -11,7 +11,7 @@ SHELL ["/bin/bash", "-ice"]
 
 COPY . .
 
-RUN pip install -U --ignore-installed  \
+RUN pip install --ignore-installed  \
   -c python/requirements_compiled.txt \
   -r python/requirements.txt \
   -r python/requirements/test-requirements.txt \

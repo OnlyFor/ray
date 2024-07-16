@@ -20,11 +20,11 @@ RUN <<EOF
 
 set -euo pipefail
 
-pip install -U --ignore-installed \
+pip install --ignore-installed \
   -c python/requirements_compiled.txt \
   -r python/requirements.txt \
   -r python/requirements/test-requirements.txt
-pip install -U -c python/requirements_compiled.txt \
+pip install -c python/requirements_compiled.txt \
   tensorflow tensorflow-probability torch torchvision \
   transformers aioboto3
 
