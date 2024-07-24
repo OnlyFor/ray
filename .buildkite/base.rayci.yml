@@ -64,7 +64,7 @@ steps:
 
   - name: docbuild
     wanda: ci/docker/doc.build.wanda.yaml
-    depends_on: oss-ci-base_build
+    depends_on: oss-ci-base_build-multipy
 
   - name: docgpubuild
     wanda: ci/docker/docgpu.build.wanda.yaml

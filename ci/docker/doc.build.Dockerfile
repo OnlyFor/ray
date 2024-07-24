@@ -1,4 +1,4 @@
-ARG DOCKER_IMAGE_BASE_BUILD=cr.ray.io/rayproject/oss-ci-base_build
+ARG DOCKER_IMAGE_BASE_BUILD=cr.ray.io/rayproject/oss-ci-base_build-py3.12
 FROM $DOCKER_IMAGE_BASE_BUILD
 
 # Unset dind settings; we are using the host's docker daemon.

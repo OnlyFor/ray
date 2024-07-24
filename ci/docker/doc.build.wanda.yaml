@@ -1,5 +1,5 @@
 name: "docbuild"
-froms: ["cr.ray.io/rayproject/oss-ci-base_build"]
+froms: ["cr.ray.io/rayproject/oss-ci-base_build-py3.12"]
 dockerfile: ci/docker/doc.build.Dockerfile
 srcs:
   - doc/requirements-doc.txt
