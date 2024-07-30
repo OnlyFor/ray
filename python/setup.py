@@ -316,9 +316,19 @@ if setup_spec.type == SetupType.RAY:
         )
     )
 
+    # "all" will not include "cpp" anymore. It is a big depedendency
+    # that most people do not need.
+    #
+    # Instead, when cpp is supported, we add a "allcpp".
     setup_spec.extras["all"] = list(
-        set(chain.from_iterable(setup_spec.extras.values()))
+        set(
+            chain.from_iterable([v for k, v in setup_spec.extras.items() if k != "cpp"])
+        )
     )
+    if RAY_EXTRA_CPP:
+        setup_spec.extras["allcpp"] = list(
+            set(setup_spec.extras["all"] + setup_spec.extras["cpp"])
+        )
 
 # These are the main dependencies for users of ray. This list
 # should be carefully curated. If you change it, please reflect
